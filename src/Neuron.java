@@ -9,7 +9,7 @@ import java.util.HashSet;
  */
 public class Neuron {
 
-    ArrayList<Double> weights;
+    private ArrayList<Double> weights;
     private ArrayList<Edge> inEdges;
     private ArrayList<Edge> outEdges;
 
