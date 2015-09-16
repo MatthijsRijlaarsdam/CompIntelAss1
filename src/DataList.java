@@ -1,7 +1,8 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Niek on 9/15/2015.
@@ -20,14 +21,15 @@ public class DataList {
 
     public ArrayList<ArrayList<Double>> readFeatures(String s) throws FileNotFoundException{
         Scanner scanner = new Scanner(new File(s));
-        ArrayList<Double> list = new ArrayList<Double>();
         ArrayList<ArrayList<Double>> result = new ArrayList<ArrayList<Double>>();
-        while (scanner.hasNext()){
-            list.add(scanner.nextDouble());
-            if (list.size() == 10) {
-                result.add(list);
-                list = new ArrayList<Double>();
+        while (scanner.hasNextLine()){
+            String str = scanner.nextLine();
+            ArrayList<Double> numbers = new ArrayList<Double>();
+            String[] splitLine= str.split(",");
+            for (String ans :splitLine){
+                numbers.add(Double.parseDouble(ans));
             }
+                result.add(numbers);
         }
         scanner.close();
         return result;

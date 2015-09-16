@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException{
 
         //Scan our data
-        //readFiles();
+        readFiles();
 
         //Create neurons and add them to our Network
         while(network.getNeurons().size() < size) {

@@ -5,9 +5,12 @@ public class Edge {
 
     private Neuron from;
     private Neuron to;
+    private double weight;
+
     public Edge(Neuron from, Neuron to) {
         this.from = from;
         this.to = to;
+        this.weight = Math.random();
     }
 
     public Neuron getFrom() {
