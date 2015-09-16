@@ -22,32 +22,10 @@ public class Main {
         //Scan our data
         //readFiles();
 
-        //Create neurons and add them to our Network
-        while(network.getNeurons().size() < size) {
-            Neuron neuron = new Neuron();
-            ArrayList<Double> weights = new ArrayList<Double>();
-            while (weights.size() < 10) {
-                weights.add(Math.random());
-            }
-            neuron.setWeights(weights);
-            network.addNeuron(neuron);
-        }
 
-        //Add all edges to our network
-        for (int i = 0; i < InputLayerSize; i++) {
-            for (int j = InputLayerSize; j < HiddenLayerSize + InputLayerSize; j++) {
-                    Neuron from = network.getNeurons().get(i);
-                    Neuron to = network.getNeurons().get(j);
-                    from.addEdge(to);
-                    if (i == 0) {
-                        for (int k = InputLayerSize + HiddenLayerSize; k < size; k++) {
-                            from = network.getNeurons().get(j);
-                            to = network.getNeurons().get(k);
-                            from.addEdge(to);
-                        }
-                    }
-            }
-        }
+
+
+
 
         //Verify we have the correct sizes
         System.out.println("EDGES SIZE:" + network.getEdges().size());
