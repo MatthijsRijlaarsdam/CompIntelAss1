@@ -27,4 +27,17 @@ public class Edge {
         return e.from == from && e.to == to;
     }
 
+    public double getWeight() {
+        return weight;
+    }
+    public Neuron opposite(Neuron neuron) {
+        if (neuron.equals(from)) {
+            return to;
+        } else if(neuron.equals(to)) {
+            return from;
+        } else {
+            return null;
+        }
+    }
+
 }
