@@ -74,7 +74,6 @@ public class Network {
         }
     }
 
-
     public void addNeuron(Neuron neuron, int layer) {
         neuronsLayers.get(layer).add(neuron);
     }
@@ -117,9 +116,14 @@ public class Network {
     }
 
     public ArrayList<Double> runNetwork(ArrayList<Double> features) {
+        //Set values for input neurons
         for (int i = 0; i < neuronsLayers.get(0).size(); i++) {
             neuronsLayers.get(0).get(i).setValue(features.get(i));
         }
+
+        //UPDATEVALUE METHOD PER LAYER
+
+        //Set Output Neuron values into an arraylist of doubles
         ArrayList<Double> outputs = new ArrayList<Double>();
         for (int i = 0; i < getOutputLayer().size(); i++) {
             outputs.add(getOutputLayer().get(i).getValue());
