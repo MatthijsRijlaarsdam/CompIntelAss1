@@ -14,6 +14,17 @@ public class Neuron {
     private ArrayList<Edge> outEdges;
     private double value;
 
+    public double getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+
+    private double threshold;
+
+
 
     public Neuron() {
         this.inEdges = new  ArrayList<Edge>();
@@ -65,9 +76,23 @@ public class Neuron {
     }
 
 
-    public void setValue(double value) {
-        this.value = value;
-    }
+    public void updateValue(){
 
+        double sum=0;
+
+        for (Edge input: inEdges){
+            sum+= input.getFrom().getValue()*input.getWeight();
+        }
+
+        sum-= threshold;
+
+        //sigmoid
+        sum= 1/(1+Math.exp(-sum));
+
+        value=sum;
+
+
+    }
+    public double getValue(){ return value;}
 
 }
