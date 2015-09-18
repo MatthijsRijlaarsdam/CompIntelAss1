@@ -12,11 +12,13 @@ public class Neuron {
 
     private ArrayList<Edge> inEdges;
     private ArrayList<Edge> outEdges;
+    private double value;
 
 
     public Neuron() {
         this.inEdges = new  ArrayList<Edge>();
         this.outEdges = new  ArrayList<Edge>();
+        value = 0;
     }
 
 
@@ -31,11 +33,11 @@ public class Neuron {
      * @param neuron
      * @return
      */
-    public Neuron addEdge(Neuron neuron) {
+    public Edge addEdge(Neuron neuron) {
         Edge e = new Edge(this, neuron);
         outEdges.add(e);
         neuron.inEdges.add(e);
-        return this;
+        return e;
     }
 
     public ArrayList<Edge> getInEdges() {
@@ -60,5 +62,10 @@ public class Neuron {
     public boolean equals(Object other) {
         Neuron neuron = (Neuron) other;
         return inEdges.equals(neuron.getInEdges()) && outEdges.equals(neuron.getOutEdges());
+    }
+
+
+    public void setValue(double value) {
+        this.value = value;
     }
 }
