@@ -2,6 +2,7 @@ import com.sun.corba.se.impl.orbutil.graph.Graph;
 import com.sun.corba.se.impl.orbutil.graph.GraphImpl;
 import com.sun.javafx.geom.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -122,6 +123,14 @@ public class Network {
         }
 
         //UPDATEVALUE METHOD PER LAYER
+        for (int i=1; i<neuronsLayers.size();i++){
+            ArrayList<Neuron> column= neuronsLayers.get(i);
+            for (Neuron neuron:column){
+                neuron.updateValue();
+            }
+
+        }
+
 
         //Set Output Neuron values into an arraylist of doubles
         ArrayList<Double> outputs = new ArrayList<Double>();
