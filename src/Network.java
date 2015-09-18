@@ -48,9 +48,14 @@ public class Network {
         cycles = 0;
 
 
+        System.out.println("LAYERS: " + neuronsLayers.size());
+        System.out.println("INPUT: " + inputLayer.size());
+        System.out.println("HIDDEN: " + neuronsLayers.get(1).size());
+        System.out.println("OUTPUT: " + outputLayer.size());
+
         //Add edges
 
-        //Add all edges to our network
+        //Add Edges to and from input/output layer
         for (int i = 0; i < inputLayer.size(); i++) {
             ArrayList<Neuron> firstHiddenLayer = neuronsLayers.get(1);
             for (int j = 0; j < firstHiddenLayer.size(); j++) {
@@ -59,7 +64,7 @@ public class Network {
                 from.addEdge(to);
                 if (i == 0) {
                     ArrayList<Neuron> lastHiddenLayer = neuronsLayers.get(noOfHidden);
-                    for (int k = 0; k < lastHiddenLayer.size(); k++) {
+                    for (int k = 0; k < outputLayer.size(); k++) {
                         from = lastHiddenLayer.get(j);
                         to = outputLayer.get(k);
                         from.addEdge(to);
@@ -99,7 +104,26 @@ public class Network {
         return result;
     }
 
+    public ArrayList<ArrayList<Neuron>> getNeuronsLayers() {
+        return neuronsLayers;
+    }
+
+    public ArrayList<Neuron> getOutputLayer() {
+        return neuronsLayers.get(noOfHidden + 1);
+    }
+
     public int getCycles() {
         return cycles;
+    }
+
+    public ArrayList<Double> runNetwork(ArrayList<Double> features) {
+        for (int i = 0; i < neuronsLayers.get(0).size(); i++) {
+            neuronsLayers.get(0).get(i).setValue(features.get(i));
+        }
+        ArrayList<Double> outputs = new ArrayList<Double>();
+        for (int i = 0; i < getOutputLayer().size(); i++) {
+            outputs.add(getOutputLayer().get(i).getValue());
+        }
+        return outputs;
     }
 }
