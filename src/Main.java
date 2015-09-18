@@ -18,6 +18,8 @@ public class Main {
     private static Network network = new Network(InputLayerSize, OutputLayerSize, HiddenLayerSize, _noOfHidden);
     private static final int size = InputLayerSize + HiddenLayerSize + OutputLayerSize;
     private final int featuresize = 5498;
+    private static ArrayList<Double> MSElist = new ArrayList<Double>();
+    private static final double alpha = 0.1;
 
     public static void main(String[] args) throws FileNotFoundException{
 
@@ -28,18 +30,41 @@ public class Main {
         System.out.println("EDGES SIZE:" + network.getEdges().size());
         System.out.println("NEURON SIZE: " + network.getNeurons().size());
 
+
+        //WHILE LOOP FOR EPOCHS
+
+
+        double ETotal = 0;
         // Loop through % of features to train the network
         for (int i = 0; i < 5498; i++) {
-
-        }
+            //Keep cycling until error is low enough
 
             //Input values of one feature array into the network
-            //Receive from network the output values
+            //And Receive from network the output values
+            ArrayList<Double> outputs = network.runNetwork(data.getFeatures().get(i));
+            int target = data.getTargets().get(i);
+            double[] targetlist = new double[7];
+            targetlist[target-1] = 1;
+            double[] errorlist = new double[7];
+            double totalerror = 0;
+            for (int j = 0; j < 7; j++) {
+                double outputvalue = outputs.get(j);
+                double error = targetlist[j] - outputvalue;
+                totalerror += error*error;
+                double errorgradient = outputvalue * (1 - outputvalue) * error;
+                errorlist[j] = errorgradient;
+                network.getOutputLayer().get(j).setErrorgradient(errorgradient);
+            }
+
             //Update weights of network
+            network.updateEdgeWeights(errorlist, alpha);
+            ETotal += totalerror/7;
+            MSElist.add(totalerror/7);
+        }
+        MSElist.add(ETotal/5498 );
             //(Update Threshholds
 
         //  Loop through % of features to validate network
-
 
 
     }

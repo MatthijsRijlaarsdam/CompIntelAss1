@@ -10,7 +10,7 @@ public class Edge {
     public Edge(Neuron from, Neuron to) {
         this.from = from;
         this.to = to;
-        this.weight = Math.random();
+        this.weight = 1 - 2* Math.random() ;
     }
 
     public Neuron getFrom() {
@@ -38,6 +38,10 @@ public class Edge {
         } else {
             return null;
         }
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 
 }

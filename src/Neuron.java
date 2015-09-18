@@ -13,6 +13,7 @@ public class Neuron {
     private ArrayList<Edge> inEdges;
     private ArrayList<Edge> outEdges;
     private double value;
+    private double errorgradient;
 
     public double getThreshold() {
         return threshold;
@@ -97,5 +98,13 @@ public class Neuron {
 
     public void setValue(double value) {
         this.value = value;
+    }
+
+    public void setErrorgradient(double errorgradient) {
+        this.errorgradient = errorgradient;
+    }
+
+    public double getErrorgradient() {
+        return errorgradient;
     }
 }

@@ -139,4 +139,32 @@ public class Network {
         }
         return outputs;
     }
+
+    public void updateEdgeWeights(double[] errorgradient, double alpha) {
+
+        //update hidden to output weights
+        ArrayList<Neuron> outputLayer = neuronsLayers.get(noOfHidden+1);
+        for (int i = 0; i < outputLayer.size(); i++) {
+            Neuron neuron = outputLayer.get(i);
+            ArrayList<Edge> inEdges = neuron.getInEdges();
+            for (Edge edge : inEdges) {
+                edge.setWeight(edge.getWeight() + alpha * edge.opposite(neuron).getValue() * errorgradient[i]);
+            }
+        }
+
+        //update input to hidden weights
+        ArrayList<Neuron> hiddenLayer = new ArrayList<Neuron>();
+        for (int i = 0; i < hiddenLayer.size(); i++) {
+            Neuron neuron = hiddenLayer.get(i);
+            double newgradient = 0;
+            for (Edge edge : neuron.getOutEdges()) {
+                Neuron opposite = edge.opposite(neuron);
+                newgradient += opposite.getErrorgradient() * edge.getWeight();
+            }
+            newgradient *= neuron.getValue() * (1 - neuron.getValue());
+            for (Edge edge : neuron.getInEdges()) {
+                edge.setWeight(edge.getWeight() + alpha * edge.opposite(neuron).getValue() * newgradient);
+            }
+        }
+    }
 }
