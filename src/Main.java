@@ -58,7 +58,7 @@ public class Main {
                     network.getOutputLayer().get(j).setErrorgradient(errorgradient);
                 }
 
-                stoppingError+=(Math.sqrt(totalerror))/7;
+                //stoppingError+=(Math.sqrt(totalerror))/7;
                 //Update weights of network
                 network.updateEdgeWeights(errorlist, alpha);
                 ETotal += totalerror / 7;
@@ -66,36 +66,32 @@ public class Main {
             }
             MSElist.add(ETotal / 5498);
 
-            stoppingError=stoppingError/5498;
-          //  System.out.println(stoppingError);
+            //Validate trained network
+            stoppingError = validate(network, 5498, 6676);
+
+            //stoppingError=stoppingError/5498;
+
             //(Update Threshholds
         }
+
+        System.out.println("MSE: " + stoppingError);
 
         System.out.println("Needs Epochs: " + epochNo);
             //  Loop through % of features to validate network
 
 
         String config=(network.toString());
-        validate(network);
-
-
-        //VALIDATE
-
-
+        //validate(network);
 
         //TEST
-
-
+        double testMSE = validate(network, 6676, data.getFeatures().size()-1);
+        System.out.println("TEST MSE: " + testMSE);
     }
 
-    public static void validate(Network validationNetwork){
+    public static double validate(Network validationNetwork, int start, int end){
         double ETotal=0;
         String results="";
-        for (int i = 5498; i < 6676; i++) {
-            //Keep cycling until error is low enough
-
-            //Input values of one feature array into the network
-            //And Receive from network the output values
+        for (int i = start; i < end; i++) {
             ArrayList<Double> outputs = validationNetwork.runNetwork(data.getFeatures().get(i));
             //print outputs
             int output= outputs.indexOf(Collections.max(outputs))+1;
@@ -112,17 +108,22 @@ public class Main {
                 totalerror += error * error;
 
             }
-
             //Update weights of network
             ETotal += totalerror / 7;
-            MSElist.add(totalerror / 7);
+            //MSElist.add(totalerror / 7);
         }
-        MSElist.add(ETotal / 1178);
 
-        System.out.println("VALIDATION MSE: " + ETotal / 1178);
+        return ETotal / 1178;
+        //MSElist.add(ETotal / 1178);
 
-        System.out.println(results);
+        //System.out.println("VALIDATION MSE: " + ETotal / 1178);
 
+        //System.out.println(results);
+
+    }
+
+    public static void test(Network testNetwork) {
+        //Double Etotal
     }
 
     public static void readFiles () throws FileNotFoundException{
