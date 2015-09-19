@@ -33,7 +33,7 @@ public class Main {
         int epochNo=0;
         //TRAIN
 
-        while (stoppingError>0.065&&epochNo<1000) {
+        while (stoppingError>0.04&&epochNo<1000) {
             epochNo++;
             stoppingError=0;
             double ETotal = 0;
@@ -67,14 +67,11 @@ public class Main {
             MSElist.add(ETotal / 5498);
 
             //Validate trained network
-            stoppingError = validate(network, 5498, 6676);
+            stoppingError = validate(network, 5498, 6676,false);
 
-            //stoppingError=stoppingError/5498;
 
-            //(Update Threshholds
         }
 
-        System.out.println("MSE: " + stoppingError);
 
         System.out.println("Needs Epochs: " + epochNo);
             //  Loop through % of features to validate network
@@ -83,12 +80,12 @@ public class Main {
         String config=(network.toString());
         //validate(network);
 
-        //TEST
-        double testMSE = validate(network, 6676, data.getFeatures().size()-1);
+        //TEST (validate on test set)
+        double testMSE = validate(network, 6676, data.getFeatures().size() - 1, true);
         System.out.println("TEST MSE: " + testMSE);
     }
 
-    public static double validate(Network validationNetwork, int start, int end){
+    public static double validate(Network validationNetwork, int start, int end, boolean printResult){
         double ETotal=0;
         String results="";
         for (int i = start; i < end; i++) {
@@ -112,19 +109,15 @@ public class Main {
             ETotal += totalerror / 7;
             //MSElist.add(totalerror / 7);
         }
+        if (printResult)
+            System.out.println(results);
 
-        return ETotal / 1178;
-        //MSElist.add(ETotal / 1178);
+        return ETotal / (end-start);
 
-        //System.out.println("VALIDATION MSE: " + ETotal / 1178);
 
-        //System.out.println(results);
 
     }
 
-    public static void test(Network testNetwork) {
-        //Double Etotal
-    }
 
     public static void readFiles () throws FileNotFoundException{
         try {
