@@ -30,6 +30,7 @@ public class Neuron {
     public Neuron() {
         this.inEdges = new  ArrayList<Edge>();
         this.outEdges = new  ArrayList<Edge>();
+        threshold=1;
         value = 0;
     }
 

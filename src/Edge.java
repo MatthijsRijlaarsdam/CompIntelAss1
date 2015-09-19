@@ -7,6 +7,9 @@ public class Edge {
     private Neuron to;
     private double weight;
 
+
+    private double prevDelta;
+
     public Edge(Neuron from, Neuron to) {
         this.from = from;
         this.to = to;
@@ -42,6 +45,14 @@ public class Edge {
 
     public void setWeight(double weight) {
         this.weight = weight;
+    }
+
+    public double getPrevDelta() {
+        return prevDelta;
+    }
+
+    public void setPrevDelta(double prevDelta) {
+        this.prevDelta = prevDelta;
     }
 
 }

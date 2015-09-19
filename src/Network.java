@@ -5,6 +5,7 @@ import com.sun.javafx.geom.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Scanner;
 
 /**
  * Created by Niek on 9/15/2015.
@@ -163,8 +164,57 @@ public class Network {
             }
             newgradient *= neuron.getValue() * (1 - neuron.getValue());
             for (Edge edge : neuron.getInEdges()) {
-                edge.setWeight(edge.getWeight() + alpha * edge.opposite(neuron).getValue() * newgradient);
+                edge.setWeight((edge.getPrevDelta() * .95) + edge.getWeight() + (alpha * edge.opposite(neuron).getValue() * newgradient));
+                edge.setPrevDelta(alpha * edge.opposite(neuron).getValue() * newgradient);
+
             }
         }
     }
+
+    public void setWeigthsFromString(String networkConfig) {
+       networkConfig= networkConfig.replaceAll("\\s+","");
+
+        Scanner scanner = new Scanner(networkConfig).useDelimiter(",");
+
+
+
+
+        for (int i=1; i<neuronsLayers.size();i++){
+            ArrayList<Neuron> column=neuronsLayers.get(i);
+            for (Neuron neuron :column){
+                for (Edge inEdge : neuron.getInEdges()){
+                    inEdge.setWeight(scanner.nextDouble());
+                }
+
+
+            }
+
+
+        }
+
+    }
+    public String toString(){
+        String result="";
+        for (int i=1;i<neuronsLayers.size();i++){
+         ArrayList<Neuron> column=neuronsLayers.get(i);
+            for (Neuron neuron :column){
+                String neuronString= "";
+                for (Edge inEdge : neuron.getInEdges()){
+                    neuronString+=inEdge.getWeight()+", ";
+                }
+                neuronString+="\n";
+
+                result +=neuronString;
+            }
+            result +="\n\n";
+
+
+        }
+        return result;
+
+
+
+
+    }
+
 }
