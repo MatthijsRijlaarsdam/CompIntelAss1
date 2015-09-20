@@ -50,10 +50,10 @@ public class Network {
         cycles = 0;
 
 
-        System.out.println("LAYERS: " + neuronsLayers.size());
-        System.out.println("INPUT: " + inputLayer.size());
-        System.out.println("HIDDEN: " + neuronsLayers.get(1).size());
-        System.out.println("OUTPUT: " + outputLayer.size());
+      //  System.out.println("LAYERS: " + neuronsLayers.size());
+      //  System.out.println("INPUT: " + inputLayer.size());
+      //  System.out.println("HIDDEN: " + neuronsLayers.get(1).size());
+      //  System.out.println("OUTPUT: " + outputLayer.size());
 
         //Add edges
 
