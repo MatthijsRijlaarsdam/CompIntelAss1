@@ -153,20 +153,23 @@ public class Network {
             }
         }
 
-        //update input to hidden weights
-        ArrayList<Neuron> hiddenLayer = new ArrayList<Neuron>();
-        for (int i = 0; i < hiddenLayer.size(); i++) {
-            Neuron neuron = hiddenLayer.get(i);
-            double newgradient = 0;
-            for (Edge edge : neuron.getOutEdges()) {
-                Neuron opposite = edge.opposite(neuron);
-                newgradient += opposite.getErrorgradient() * edge.getWeight();
-            }
-            newgradient *= neuron.getValue() * (1 - neuron.getValue());
-            for (Edge edge : neuron.getInEdges()) {
-                edge.setWeight((edge.getPrevDelta() * .95) + edge.getWeight() + (alpha * edge.opposite(neuron).getValue() * newgradient));
-                edge.setPrevDelta(alpha * edge.opposite(neuron).getValue() * newgradient);
 
+        for(int j=0; j<noOfHidden;j++) {
+            //update input to hidden weights
+            ArrayList<Neuron> hiddenLayer = neuronsLayers.get(noOfHidden-j);
+            for (int i = 0; i < hiddenLayer.size(); i++) {
+                Neuron neuron = hiddenLayer.get(i);
+                double newgradient = 0;
+                for (Edge edge : neuron.getOutEdges()) {
+                    Neuron opposite = edge.opposite(neuron);
+                    newgradient += opposite.getErrorgradient() * edge.getWeight();
+                }
+                newgradient *= neuron.getValue() * (1 - neuron.getValue());
+                for (Edge edge : neuron.getInEdges()) {
+                    edge.setWeight((edge.getPrevDelta() * .95) + edge.getWeight() + (alpha * edge.opposite(neuron).getValue() * newgradient));
+                    edge.setPrevDelta(alpha * edge.opposite(neuron).getValue() * newgradient);
+
+                }
             }
         }
     }

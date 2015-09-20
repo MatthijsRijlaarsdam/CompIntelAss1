@@ -10,7 +10,7 @@ public class Main {
 
     private static DataList data = new DataList();
     private static final int InputLayerSize = 10;
-    private static int HiddenLayerSize = 6;
+    private static int HiddenLayerSize = 25;
     private static final int OutputLayerSize = 7;
     private static final int _noOfHidden = 1;
     private static double prevMSE;
@@ -23,89 +23,101 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException{
 
+
         //Scan our data
         readFiles();
         double[] results= new double[31];
 
-        for (int k=0; k<10;k++) {
-
-            System.out.println(k);
-            HiddenLayerSize=6;
-
-            while (HiddenLayerSize < 31) {
-                network = new Network(InputLayerSize, OutputLayerSize, HiddenLayerSize, _noOfHidden);
-                //Verify we have the correct sizes
-                //  System.out.println("EDGES SIZE:" + network.getEdges().size());
-                // System.out.println("NEURON SIZE: " + network.getNeurons().size());
 
 
-                double stoppingError = 1;
-                prevMSE = 2;
-                int epochNo = 0;
-                //TRAIN
 
-                while ((prevMSE - stoppingError > 0.0005) && epochNo < 1000) {
-                    epochNo++;
-                    double ETotal = 0;
-                    // Loop through % of features to train the network
-                    for (int i = 0; i < 5498; i++) {
-                        //Keep cycling until error is low enough
+            network = new Network(InputLayerSize, OutputLayerSize, HiddenLayerSize, _noOfHidden);
+            //Verify we have the correct sizes
+            //  System.out.println("EDGES SIZE:" + network.getEdges().size());
+            // System.out.println("NEURON SIZE: " + network.getNeurons().size());
 
-                        //Input values of one feature array into the network
-                        //And Receive from network the output values
-                        ArrayList<Double> outputs = network.runNetwork(data.getFeatures().get(i));
-                        int target = data.getTargets().get(i);
-                        double[] targetlist = new double[7];
-                        targetlist[target - 1] = 1;
-                        double[] errorlist = new double[7];
-                        double totalerror = 0;
-                        for (int j = 0; j < 7; j++) {
-                            double outputvalue = outputs.get(j);
-                            double error = targetlist[j] - outputvalue;
-                            totalerror += error * error;
-                            double errorgradient = outputvalue * (1 - outputvalue) * error;
-                            errorlist[j] = errorgradient;
-                            network.getOutputLayer().get(j).setErrorgradient(errorgradient);
-                        }
 
-                        //stoppingError+=(Math.sqrt(totalerror))/7;
-                        //Update weights of network
-                        network.updateEdgeWeights(errorlist, alpha);
-                        ETotal += totalerror / 7;
-                        MSElist.add(totalerror / 7);
+            double stoppingError = 1;
+            prevMSE = 2;
+            int epochNo = 0;
+            //TRAIN
+
+            while ((prevMSE - stoppingError > 0.000005) && epochNo < 1000) {
+                epochNo++;
+                double ETotal = 0;
+                // Loop through % of features to train the network
+                for (int i = 0; i < 5498; i++) {
+                    //Keep cycling until error is low enough
+
+                    //Input values of one feature array into the network
+                    //And Receive from network the output values
+                    ArrayList<Double> outputs = network.runNetwork(data.getFeatures().get(i));
+                    int target = data.getTargets().get(i);
+                    double[] targetlist = new double[7];
+                    targetlist[target - 1] = 1;
+                    double[] errorlist = new double[7];
+                    double totalerror = 0;
+                    for (int j = 0; j < 7; j++) {
+                        double outputvalue = outputs.get(j);
+                        double error = targetlist[j] - outputvalue;
+                        totalerror += error * error;
+                        double errorgradient = outputvalue * (1 - outputvalue) * error;
+                        errorlist[j] = errorgradient;
+                        network.getOutputLayer().get(j).setErrorgradient(errorgradient);
                     }
-                    MSElist.add(ETotal / 5498);
 
-                    //Validate trained network
-                    prevMSE = stoppingError;
-                    stoppingError = validate(network, 5498, 6676, false);
-
+                    //stoppingError+=(Math.sqrt(totalerror))/7;
+                    //Update weights of network
+                    network.updateEdgeWeights(errorlist, alpha);
+                    ETotal += totalerror / 7;
+                    MSElist.add(totalerror / 7);
                 }
+                MSElist.add(ETotal / 5498);
 
-                // System.out.println("Needs Epochs: " + epochNo);
-                //  Loop through % of features to validate network
+                //Validate trained network
+                prevMSE = stoppingError;
+                stoppingError = validate(network, 5498, 6676, false);
 
-
-                String config = (network.toString());
-                //validate(network);
-
-                //TEST (validate on test set)
-                double testMSE = validate(network, 6676, data.getFeatures().size() - 1, false);
-                //  System.out.println("TEST MSE: " + testMSE);
-
-                //System.out.println(HiddenLayerSize + ", " + testMSE + ", " + epochNo);
-                results[HiddenLayerSize]+=testMSE;
-
-                HiddenLayerSize++;
+                System.out.println(epochNo+","+stoppingError);
 
             }
-        }
-        for (int i=6;i<31;i++){
-            double result= results[i]/10;
-            System.out.println(i+", "+result);
+
+            //  Loop through % of features to validate network
 
 
+            String config = (network.toString());
+            //validate(network);
+
+            //TEST (validate on test set)
+            double testMSE = validate(network, 6676, data.getFeatures().size(), true);
+
+            results[HiddenLayerSize] += testMSE;
+
+            printUnknown(network);
+
+
+
+
+    }
+
+    /**
+     * prints the unknown results
+     * @param validationNetwork
+     */
+
+    public static void printUnknown(Network validationNetwork){
+        String results="";
+        for (int i = 0; i < data.getUnknown().size(); i++) {
+
+            ArrayList<Double> outputs = network.runNetwork(data.getUnknown().get(i));
+            int output= outputs.indexOf(Collections.max(outputs))+1;
+            results+= output+", ";
+
         }
+
+        System.out.println(results);
+
+
 
     }
 
