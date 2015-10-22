@@ -7,14 +7,33 @@ import java.util.ArrayList;
  */
 public class Tile {
 
+    public int gettX() {
+        return tX;
+    }
+
+    public void settX(int tX) {
+        this.tX = tX;
+    }
+
     protected int tX;
+
+    public int gettY() {
+        return tY;
+    }
+
+    public void settY(int tY) {
+        this.tY = tY;
+    }
+
     protected int tY;
     protected Tile eastTile, northTile, westTile, southTile;
     protected ArrayList<Ant> antList;
+    private boolean accessable;
 
-    public Tile(int x, int y) {
+    public Tile(int x, int y,boolean _accessable) {
         tX = x;
         tY = y;
+        accessable=_accessable;
         antList = new ArrayList<Ant>();
     }
 
