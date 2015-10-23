@@ -83,36 +83,54 @@ public class Ant {
         if (tTile.hasSouthTile() && tTile.getSouthTile().isAccessable()) {
             southPheromone = tTile.getSouthTile().getPheromone();
         }
-        double total = eastPheromone + northPheromone + westPheromone + southPheromone;
-        if (MainMaze.start) {
-            ArrayList<Tile> tiles = tTile.getAccessibleTiles();
-            total = tiles.size();
+
+        ArrayList<Tile> tiles = tTile.getAccessibleTiles();
+        double total = tiles.size();
             if (tTile.hasEastTile()) {
-                if (tiles.contains(tTile.getEastTile())) {
-                    eastChance = 1 / total;
+                if (MainMaze.start) {
+                    if (tiles.contains(tTile.getEastTile())) {
+                        eastChance = 1 / total;
+                    }
+                } else {
+                    eastPheromone = tTile.getEastTile().getPheromone();
                 }
             }
             if (tTile.hasNorthTile()) {
-                if (tiles.contains(tTile.getNorthTile())) {
-                    northChance = 1 / total;
+                if (MainMaze.start) {
+                    if (tiles.contains(tTile.getNorthTile())) {
+                        northChance = 1 / total;
+                    }
+                } else {
+                    northPheromone = tTile.getNorthTile().getPheromone();
                 }
+
             }
             if (tTile.hasWestTile()) {
-                if (tiles.contains(tTile.getWestTile())) {
-                    westChance = 1 / total;
+                if (MainMaze.start) {
+                    if (tiles.contains(tTile.getWestTile())) {
+                        westChance = 1 / total;
+                    }
+                }else {
+                    westPheromone = tTile.getWestTile().getPheromone();
                 }
             }
             if (tTile.hasSouthTile()) {
-                if (tiles.contains(tTile.getSouthTile())) {
-                    southChance = 1 / total;
+                if (MainMaze.start) {
+                    if (tiles.contains(tTile.getSouthTile())) {
+                        southChance = 1 / total;
+                    }
+                } else {
+                    southPheromone = tTile.getSouthTile().getPheromone();
                 }
             }
-        } else {
-            eastChance = calculateChance(eastPheromone, total);
-            northChance = calculateChance(northPheromone, total);
-            westChance = calculateChance(westPheromone, total);
-        }
 
+            if (!MainMaze.start) {
+                total = eastPheromone + northPheromone + westPheromone + southPheromone;
+                eastChance = eastPheromone / total;
+                northChance = northPheromone / total;
+                westChance = westPheromone / total;
+                southChance = southPheromone / total;
+            }
         double random = Math.random();
         if (random < eastChance) {
             //go east
