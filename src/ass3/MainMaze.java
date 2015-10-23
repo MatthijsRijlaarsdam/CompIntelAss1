@@ -10,14 +10,97 @@ public class MainMaze {
 
     public final static int MAX_NUMBER_OF_ITERATIONS = 100;
     public final static int NUMBER_OF_ANTS = 50;
-    public final static int PHEROMONE_DROPPED = 1;
-    public final static double EVAPORATION_PARAMETERS = 0.1;
-    public final static double CONVERGION_CRITERION = 0;
+    public final static int PHEROMONE_DROPPED = 100;
+    public final static double EVAPORATION_PARAMETERS = 0.3;
+    public final static double CONVERGION_CRITERION = 2000;
+    public final static String mapFile = "easy maze.txt";
+    public final static String coordsFile = "easy coordinates.txt";
 
+    protected Map tMap;
+    protected ArrayList<Ant> tAnts;
+    protected ArrayList<ArrayList<Integer>> actions;
+    protected ArrayList<Integer> routeLengths;
+    public static boolean start;
+
+    public MainMaze(Map map) {
+        tMap = map;
+        resetAnts();
+        actions = new ArrayList<ArrayList<Integer>>();
+        routeLengths = new ArrayList<Integer>();
+        start = true;
+    }
+
+    public void resetAnts() {
+        tAnts = new ArrayList<Ant>();
+        for (int i = 0; i < NUMBER_OF_ANTS; i++) {
+            tAnts.add(new Ant(tMap.getStart()));
+        }
+    }
+
+    public void settMap(Map map) {
+        tMap = map;
+    }
+
+    public Map gettMap() {
+        return tMap;
+    }
+
+    public void generateSolotions() {
+        int action;
+        for (int steps = 0; steps < CONVERGION_CRITERION; steps++) {
+            for (Ant ant : tAnts) {
+                ant.addVisited(ant.getTile());
+                if (!ant.hasReachedGoal()) {
+                    action = ant.selectTile();
+                    //System.out.println(action);
+                    ant.getTile().moveAnt(ant, action);
+                    ant.incrementRouteLength();
+                    ant.addAction(action);
+                    if (!ant.gettVisited().contains(ant.getTile())) {
+                        ant.addVisited(ant.getTile());
+                    }
+                    if (ant.getTile().equals(tMap.getEnd())) {
+                        if (!ant.hasReachedGoal()) {
+                            routeLengths.add(ant.getRouteLength());
+                            actions.add(ant.gettActions());
+                            ant.reachedGoal();
+                            System.out.println("ant reached the goal");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void updatePheromone() {
+        for (Ant ant : tAnts) {
+            for (Tile tile : ant.gettVisited()) {
+                tile.addPheromone(PHEROMONE_DROPPED / ant.getRouteLength());
+            }
+        }
+    }
+
+    public void evaporate() {
+        for (ArrayList<Tile> tiles : tMap.getTileList()) {
+            for (Tile tile : tiles) {
+                tile.evaporatePheromone(EVAPORATION_PARAMETERS);
+            }
+        }
+    }
 
     public static void main(String[] args) {
-        MapParser parser = new MapParser("easy maze.txt");
+        MapParser parser = new MapParser(mapFile, coordsFile);
         parser.parseMap();
+        MainMaze main = new MainMaze(parser.getMap());
 
+        for (int iterations = 0; iterations < MAX_NUMBER_OF_ITERATIONS; iterations++) {
+            main.resetAnts();
+            main.evaporate();
+            main.generateSolotions();
+            main.updatePheromone();
+            if (iterations == 0) {
+                start = false;
+            }
+        }
     }
 }

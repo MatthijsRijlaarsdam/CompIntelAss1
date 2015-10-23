@@ -7,6 +7,30 @@ import java.util.ArrayList;
  */
 public class Tile {
 
+    protected int tY;
+    protected Tile eastTile, northTile, westTile, southTile;
+    protected ArrayList<Ant> antList;
+    ArrayList<Tile> accessibleTiles;
+    private boolean accessible;
+    protected double tPheromone;
+
+    public Tile(int x, int y,boolean _accessible) {
+        tX = x;
+        tY = y;
+        accessible=_accessible;
+        antList = new ArrayList<Ant>();
+        accessibleTiles = new ArrayList<Tile>();
+        tPheromone = 0;
+    }
+
+    public double getPheromone() {
+        return tPheromone;
+    }
+
+    public void addPheromone(double tPheromone) {
+        this.tPheromone += tPheromone;
+    }
+
     public int gettX() {
         return tX;
     }
@@ -25,18 +49,6 @@ public class Tile {
         this.tY = tY;
     }
 
-    protected int tY;
-    protected Tile eastTile, northTile, westTile, southTile;
-    protected ArrayList<Ant> antList;
-    private boolean accessable;
-
-    public Tile(int x, int y,boolean _accessable) {
-        tX = x;
-        tY = y;
-        accessable=_accessable;
-        antList = new ArrayList<Ant>();
-    }
-
     public void addAnt(Ant ant) {
         antList.add(ant);
     }
@@ -45,40 +57,73 @@ public class Tile {
         antList.remove(ant);
     }
 
-    public int moveAnt(Ant ant, String direction) {
-        int action =4;
+    public void updateAccessibleTiles() {
+        if (hasEastTile() && eastTile.isAccessable()) {
+            accessibleTiles.add(eastTile);
+        }
+        if (hasNorthTile() && northTile.isAccessable()) {
+
+            accessibleTiles.add(northTile);
+        }
+        if (hasWestTile() && westTile.isAccessable()) {
+
+            accessibleTiles.add(westTile);
+        }
+        if (hasSouthTile() && southTile.isAccessable()) {
+
+            accessibleTiles.add(southTile);
+        }
+    }
+
+    public ArrayList<Tile> getAccessibleTiles() {
+        return accessibleTiles;
+    }
+
+    public int moveAnt(Ant ant, int direction) {
+        int action = 4;
         switch (direction) {
-            case "east":
+            case 0:
                 if (hasEastTile()) {
-                    eastTile.addAnt(ant);
-                    this.removeAnt(ant);
-                    action = 0;
+                        ant.setTile(eastTile);
+                        eastTile.addAnt(ant);
+                        this.removeAnt(ant);
+                        action = 0;
                 }
                 break;
-            case "north":
+            case 1:
                 if (hasNorthTile()) {
+                    ant.setTile(northTile);
                     northTile.addAnt(ant);
                     this.removeAnt(ant);
                     action = 1;
                 }
                 break;
-            case "west":
+            case 2:
                 if (hasWestTile()) {
+                    ant.setTile(westTile);
                     westTile.addAnt(ant);
                     this.removeAnt(ant);
                     action = 2;
                 }
                 break;
-            case "south":
-                if (hasWestTile()) {
-                    westTile.addAnt(ant);
+            case 3:
+                if (hasSouthTile()) {
+                    ant.setTile(southTile);
+                    southTile.addAnt(ant);
                     this.removeAnt(ant);
-                    action = 2;
+                    action = 3;
                 }
                 break;
         }
-
         return action;
+    }
+
+    public void evaporatePheromone(double constant) {
+        tPheromone = (1 - constant) * tPheromone;
+    }
+
+    public boolean isAccessable() {
+        return accessible;
     }
 
     public boolean hasEastTile() {
@@ -127,5 +172,9 @@ public class Tile {
 
     public void setSouthTile(Tile southTile) {
         this.southTile = southTile;
+    }
+
+    public boolean equals(Tile that) {
+        return (tX == that.gettX() && tY == that.gettY());
     }
 }
