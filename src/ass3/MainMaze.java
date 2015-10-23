@@ -9,10 +9,10 @@ import java.util.ArrayList;
 public class MainMaze {
 
     public final static int MAX_NUMBER_OF_ITERATIONS = 100;
-    public final static int NUMBER_OF_ANTS = 50;
+    public final static int NUMBER_OF_ANTS = 1000;
     public final static double PHEROMONE_DROPPED = 100;
-    public final static double EVAPORATION_PARAMETERS = 0.3;
-    public final static int CONVERGION_CRITERION = 2000;
+    public final static double EVAPORATION_PARAMETERS = 0.1;
+    public final static int CONVERGION_CRITERION = 1500;
     public final static String mapFile = "easy maze.txt";
     public final static String coordsFile = "easy coordinates.txt";
 
@@ -22,7 +22,8 @@ public class MainMaze {
     protected ArrayList<Integer> routeLengths;
     protected ArrayList<Integer> bestActions;
     protected int bestRoute;
-    public static boolean start;
+    protected int antsReachedGoal;
+    public static boolean noRouteYet;
 
     public MainMaze(Map map) {
         tMap = map;
@@ -30,8 +31,8 @@ public class MainMaze {
         actions = new ArrayList<ArrayList<Integer>>();
         routeLengths = new ArrayList<Integer>();
         bestActions = new ArrayList<Integer>();
-        bestRoute = CONVERGION_CRITERION;
-        start = true;
+        bestRoute = Integer.MAX_VALUE;
+        noRouteYet = true;
     }
 
     public void resetAnts() {
@@ -39,6 +40,7 @@ public class MainMaze {
         for (int i = 0; i < NUMBER_OF_ANTS; i++) {
             tAnts.add(new Ant(tMap.getStart()));
         }
+        antsReachedGoal = 0;
     }
 
     public void settMap(Map map) {
@@ -55,24 +57,30 @@ public class MainMaze {
             for (Ant ant : tAnts) {
                 ant.addVisited(ant.getTile());
                 if (!ant.hasReachedGoal()) {
+                    ant.settPreviousTile(ant.getTile());
                     action = ant.selectTile();
+                    if (action != 4) {
+                        ant.incrementRouteLength();
+                        ant.addAction(action);
+                    }
                     ant.getTile().moveAnt(ant, action);
-                    ant.incrementRouteLength();
-                    ant.addAction(action);
                     if (!ant.gettVisited().contains(ant.getTile())) {
                         ant.addVisited(ant.getTile());
                     }
                     if (ant.getTile().equals(tMap.getEnd())) {
                         if (!ant.hasReachedGoal()) {
+                            if (noRouteYet) {
+                                noRouteYet = false;
+                            }
+                            antsReachedGoal++;
                             routeLengths.add(ant.getRouteLength());
                             actions.add(ant.gettActions());
                             ant.reachedGoal();
                             if (ant.getRouteLength() < bestRoute) {
-                                System.out.println("new best route");
                                 bestActions = ant.gettActions();
                                 bestRoute = ant.getRouteLength();
+                                System.out.println("new best route: " + bestRoute);
                             }
-                            System.out.println("ant reached the goal");
                         }
                     }
                 }
@@ -82,11 +90,11 @@ public class MainMaze {
 
     public void updatePheromone() {
         for (Ant ant : tAnts) {
-            if (ant.hasReachedGoal()) {
                 for (Tile tile : ant.gettVisited()) {
+                    if (ant.hasReachedGoal()) {
                         tile.addPheromone((PHEROMONE_DROPPED / ant.getRouteLength()));
+                    }
                 }
-            }
         }
     }
 
@@ -102,16 +110,12 @@ public class MainMaze {
         MapParser parser = new MapParser(mapFile, coordsFile);
         parser.parseMap();
         MainMaze main = new MainMaze(parser.getMap());
-
-        for (int iterations = 0; iterations < MAX_NUMBER_OF_ITERATIONS; iterations++) {
+        double averageRouteLength = 0;
+        for (int i = 0; i < MAX_NUMBER_OF_ITERATIONS; i++) {
             main.resetAnts();
             main.evaporate();
             main.generateSolotions();
             main.updatePheromone();
-            if (iterations == 0) {
-                start = false;
-                System.out.println("1st cycle complete");
-            }
         }
     }
 }

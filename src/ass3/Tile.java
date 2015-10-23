@@ -79,7 +79,7 @@ public class Tile {
         return accessibleTiles;
     }
 
-    public int moveAnt(Ant ant, int direction) {
+    public boolean moveAnt(Ant ant, int direction) {
         int action = 4;
         switch (direction) {
             case 0:
@@ -88,6 +88,7 @@ public class Tile {
                         eastTile.addAnt(ant);
                         this.removeAnt(ant);
                         action = 0;
+                    return true;
                 }
                 break;
             case 1:
@@ -96,6 +97,7 @@ public class Tile {
                     northTile.addAnt(ant);
                     this.removeAnt(ant);
                     action = 1;
+                    return true;
                 }
                 break;
             case 2:
@@ -104,6 +106,7 @@ public class Tile {
                     westTile.addAnt(ant);
                     this.removeAnt(ant);
                     action = 2;
+                    return true;
                 }
                 break;
             case 3:
@@ -112,10 +115,11 @@ public class Tile {
                     southTile.addAnt(ant);
                     this.removeAnt(ant);
                     action = 3;
+                    return true;
                 }
                 break;
         }
-        return action;
+        return false;
     }
 
     public void evaporatePheromone(double constant) {
@@ -175,6 +179,9 @@ public class Tile {
     }
 
     public boolean equals(Tile that) {
+        if (that == null) {
+            return false;
+        }
         return (tX == that.gettX() && tY == that.gettY());
     }
 }
