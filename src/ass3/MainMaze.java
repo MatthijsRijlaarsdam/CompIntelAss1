@@ -9,12 +9,12 @@ import java.util.ArrayList;
 public class MainMaze {
 
     public final static int MAX_NUMBER_OF_ITERATIONS = 100;
-    public final static int NUMBER_OF_ANTS = 1000;
-    public final static double PHEROMONE_DROPPED = 100;
-    public final static double EVAPORATION_PARAMETERS = 0.1;
-    public final static int CONVERGION_CRITERION = 1500;
-    public final static String mapFile = "easy maze.txt";
-    public final static String coordsFile = "easy coordinates.txt";
+    public final static int NUMBER_OF_ANTS = 500;
+    public final static double PHEROMONE_DROPPED = 1000;
+    public final static double EVAPORATION_PARAMETERS = 0.05;
+    public final static int CONVERGION_CRITERION = 1000;
+    public final static String mapFile = "medium maze.txt";
+    public final static String coordsFile = "medium coordinates.txt";
 
     protected Map tMap;
     protected ArrayList<Ant> tAnts;
@@ -67,26 +67,44 @@ public class MainMaze {
                     if (!ant.gettVisited().contains(ant.getTile())) {
                         ant.addVisited(ant.getTile());
                     }
-                    if (ant.getTile().equals(tMap.getEnd())) {
-                        if (!ant.hasReachedGoal()) {
-                            if (noRouteYet) {
-                                noRouteYet = false;
-                            }
-                            antsReachedGoal++;
-                            routeLengths.add(ant.getRouteLength());
-                            actions.add(ant.gettActions());
-                            ant.reachedGoal();
-                            if (ant.getRouteLength() < bestRoute) {
-                                bestActions = ant.gettActions();
-                                bestRoute = ant.getRouteLength();
-                                System.out.println("new best route: " + bestRoute);
-                            }
-                        }
-                    }
+                    checkFinished(ant);
+
                 }
             }
         }
     }
+
+    public void checkFinished(Ant ant){
+        if (ant.getTile().equals(tMap.getEnd())) {
+            if (!ant.hasReachedGoal()) {
+                if (noRouteYet) {
+                    noRouteYet = false;
+                }
+                antsReachedGoal++;
+                routeLengths.add(ant.getRouteLength());
+                actions.add(ant.gettActions());
+                ant.reachedGoal();
+                getBestAnt(ant);
+
+            }
+        }
+
+    }
+
+
+    public void getBestAnt(Ant ant){
+        if (ant.getRouteLength() < bestRoute) {
+            bestActions = ant.gettActions();
+            bestRoute = ant.getRouteLength();
+            System.out.println(bestRoute+";");
+            System.out.println(tMap.getStart().gettX()+", "+tMap.getStart().gettY()+";");
+            for( int i:bestActions) {
+                System.out.print(i+";");
+            }
+        }
+
+    }
+
 
     public void updatePheromone() {
         for (Ant ant : tAnts) {
