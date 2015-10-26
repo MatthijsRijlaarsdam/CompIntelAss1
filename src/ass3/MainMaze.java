@@ -13,7 +13,7 @@ public class MainMaze {
     public final static double PHEROMONE_DROPPED = 1000;
     public final static double EVAPORATION_PARAMETERS = 0.05;
     public final static int CONVERGION_CRITERION = 1000;
-    public final static int MAX_STEPS=1000;
+    public final static int MAX_STEPS = 1000;
     public final static String mapFile = "medium maze.txt";
     public final static String coordsFile = "medium coordinates.txt";
 
@@ -54,28 +54,27 @@ public class MainMaze {
 
     public void generateSolotions() {
         int action;
-        for (int steps = 0; steps < MAX_STEPS; steps++) {
-            for (Ant ant : tAnts) {
+        for (Ant ant : tAnts) {
+            while (!ant.hasReachedGoal()) {
                 ant.addVisited(ant.getTile());
-                if (!ant.hasReachedGoal()) {
-                    ant.settPreviousTile(ant.getTile());
-                    action = ant.selectTile();
-                    if (action != 4) {
-                        ant.incrementRouteLength();
-                        ant.addAction(action);
-                    }
-                    ant.getTile().moveAnt(ant, action);
-                    if (!ant.gettVisited().contains(ant.getTile())) {
-                        ant.addVisited(ant.getTile());
-                    }
-                    checkFinished(ant);
-
+                ant.settPreviousTile(ant.getTile());
+                action = ant.selectTile();
+                if (action != 4) {
+                    ant.incrementRouteLength();
+                    ant.addAction(action);
                 }
+                ant.getTile().moveAnt(ant, action);
+                if (!ant.gettVisited().contains(ant.getTile())) {
+                    ant.addVisited(ant.getTile());
+                }
+                checkFinished(ant);
+
             }
         }
+        
     }
 
-    public void checkFinished(Ant ant){
+    public void checkFinished(Ant ant) {
         if (ant.getTile().equals(tMap.getEnd())) {
             if (!ant.hasReachedGoal()) {
                 if (noRouteYet) {
@@ -93,14 +92,14 @@ public class MainMaze {
     }
 
 
-    public void getBestAnt(Ant ant){
+    public void getBestAnt(Ant ant) {
         if (ant.getRouteLength() < bestRoute) {
             bestActions = ant.gettActions();
             bestRoute = ant.getRouteLength();
-            System.out.println(bestRoute+";");
-            System.out.println(tMap.getStart().gettX()+", "+tMap.getStart().gettY()+";");
-            for( int i:bestActions) {
-                System.out.print(i+";");
+            System.out.println(bestRoute + ";");
+            System.out.println(tMap.getStart().gettX() + ", " + tMap.getStart().gettY() + ";");
+            for (int i : bestActions) {
+                System.out.print(i + ";");
             }
         }
 
@@ -109,11 +108,11 @@ public class MainMaze {
 
     public void updatePheromone() {
         for (Ant ant : tAnts) {
-                for (Tile tile : ant.gettVisited()) {
-                    if (ant.hasReachedGoal()) {
-                        tile.addPheromone((PHEROMONE_DROPPED / ant.getRouteLength()));
-                    }
+            for (Tile tile : ant.gettVisited()) {
+                if (ant.hasReachedGoal()) {
+                    tile.addPheromone((PHEROMONE_DROPPED / ant.getRouteLength()));
                 }
+            }
         }
     }
 
@@ -129,7 +128,6 @@ public class MainMaze {
         MapParser parser = new MapParser(mapFile, coordsFile);
         parser.parseMap();
         MainMaze main = new MainMaze(parser.getMap());
-        double averageRouteLength = 0;
         for (int i = 0; i < MAX_NUMBER_OF_ITERATIONS; i++) {
             main.resetAnts();
             main.evaporate();
