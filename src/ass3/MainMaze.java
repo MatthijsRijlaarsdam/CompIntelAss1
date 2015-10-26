@@ -9,11 +9,10 @@ import java.util.ArrayList;
 public class MainMaze {
 
     public final static int MAX_NUMBER_OF_ITERATIONS = 100;
-    public final static int NUMBER_OF_ANTS = 500;
-    public final static double PHEROMONE_DROPPED = 1000;
+    public final static int NUMBER_OF_ANTS = 100;
+    public final static double PHEROMONE_DROPPED = 50;
     public final static double EVAPORATION_PARAMETERS = 0.05;
-    public final static int CONVERGION_CRITERION = 1000;
-    public final static int MAX_STEPS = 1000;
+    public final static double CONVERGION_CRITERION = .05;
     public final static String mapFile = "medium maze.txt";
     public final static String coordsFile = "medium coordinates.txt";
 
@@ -23,6 +22,7 @@ public class MainMaze {
     protected ArrayList<Integer> routeLengths;
     protected ArrayList<Integer> bestActions;
     protected int bestRoute;
+    protected int prevBest=Integer.MAX_VALUE;
     protected int antsReachedGoal;
     public static boolean noRouteYet;
 
@@ -64,9 +64,9 @@ public class MainMaze {
                     ant.addAction(action);
                 }
                 ant.getTile().moveAnt(ant, action);
-                if (!ant.gettVisited().contains(ant.getTile())) {
+                if (!ant.gettVisited().contains(ant.getTile()))
                     ant.addVisited(ant.getTile());
-                }
+
                 checkFinished(ant);
 
             }
@@ -77,9 +77,7 @@ public class MainMaze {
     public void checkFinished(Ant ant) {
         if (ant.getTile().equals(tMap.getEnd())) {
             if (!ant.hasReachedGoal()) {
-                if (noRouteYet) {
-                    noRouteYet = false;
-                }
+
                 antsReachedGoal++;
                 routeLengths.add(ant.getRouteLength());
                 actions.add(ant.gettActions());
@@ -95,6 +93,7 @@ public class MainMaze {
     public void getBestAnt(Ant ant) {
         if (ant.getRouteLength() < bestRoute) {
             bestActions = ant.gettActions();
+            prevBest=bestRoute;
             bestRoute = ant.getRouteLength();
             System.out.println(bestRoute + ";");
             System.out.println(tMap.getStart().gettX() + ", " + tMap.getStart().gettY() + ";");
@@ -128,11 +127,20 @@ public class MainMaze {
         MapParser parser = new MapParser(mapFile, coordsFile);
         parser.parseMap();
         MainMaze main = new MainMaze(parser.getMap());
-        for (int i = 0; i < MAX_NUMBER_OF_ITERATIONS; i++) {
+        boolean finished=false;
+        int i=0;
+        while(i < MAX_NUMBER_OF_ITERATIONS&&!finished) {
+            if(i>0)
+                noRouteYet=true;
+
+            if(main.prevBest/main.bestRoute-1<CONVERGION_CRITERION)
+                finished=true;
+
             main.resetAnts();
             main.evaporate();
             main.generateSolotions();
             main.updatePheromone();
+            i++;
         }
     }
 }

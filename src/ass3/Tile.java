@@ -80,14 +80,12 @@ public class Tile {
     }
 
     public boolean moveAnt(Ant ant, int direction) {
-        int action = 4;
         switch (direction) {
             case 0:
                 if (hasEastTile()) {
                         ant.setTile(eastTile);
                         eastTile.addAnt(ant);
                         this.removeAnt(ant);
-                        action = 0;
                     return true;
                 }
                 break;
@@ -96,7 +94,6 @@ public class Tile {
                     ant.setTile(northTile);
                     northTile.addAnt(ant);
                     this.removeAnt(ant);
-                    action = 1;
                     return true;
                 }
                 break;
@@ -105,7 +102,6 @@ public class Tile {
                     ant.setTile(westTile);
                     westTile.addAnt(ant);
                     this.removeAnt(ant);
-                    action = 2;
                     return true;
                 }
                 break;
@@ -114,9 +110,13 @@ public class Tile {
                     ant.setTile(southTile);
                     southTile.addAnt(ant);
                     this.removeAnt(ant);
-                    action = 3;
                     return true;
                 }
+                break;
+            case 4:
+                ant.gettPreviousTile().addAnt(ant);
+                ant.setTile(ant.gettPreviousTile());
+                this.removeAnt(ant);
                 break;
         }
         return false;
