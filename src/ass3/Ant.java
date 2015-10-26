@@ -171,29 +171,8 @@ public class Ant {
                 return 3;
         }
 
-        //else if all is visited (dead end!)
-        if (random < eastChance)
-
-        {
-            //go east
-            return 0;
-        } else if (random < eastChance + northChance)
-
-        {
-            //go north
-            return 1;
-        } else if (random < eastChance + northChance + westChance)
-
-        {
-            //go west
-            return 2;
-        } else
-
-        {
-            //go south
-            return 3;
-        }
-
+        //All tiles around are visited, so go to previous
+        return 4;
     }
 
 }

@@ -60,10 +60,8 @@ public class MainMaze {
                 if (!ant.hasReachedGoal()) {
                     ant.settPreviousTile(ant.getTile());
                     action = ant.selectTile();
-                    if (action != 4) {
                         ant.incrementRouteLength();
                         ant.addAction(action);
-                    }
                     ant.getTile().moveAnt(ant, action);
                     if (!ant.gettVisited().contains(ant.getTile())) {
                         ant.addVisited(ant.getTile());
