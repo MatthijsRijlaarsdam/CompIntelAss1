@@ -14,26 +14,19 @@ public class Ant {
     protected ArrayList<Tile> tVisited;
     protected ArrayList<Integer> tActions;
     protected boolean tGoalReached;
-    protected Tile tPreviousTile;
-    protected ArrayList<Tile> recentlyVisited;
+    protected int backIndex;
     protected int i;
 
     public Ant(Tile tile) {
         this.tTile = tile;
         tVisited = new ArrayList<Tile>();
+        tVisited.add(tile);
         tActions = new ArrayList<Integer>();
         tGoalReached = false;
-        recentlyVisited = new ArrayList<Tile>();
+        backIndex=0;
         i = 0;
     }
 
-    public void addRecentlyVisited(Tile tile) {
-        recentlyVisited.add(tile);
-        if (recentlyVisited.size() > 1000) {
-            recentlyVisited.remove(i);
-            i++;
-        }
-    }
 
     public Tile getTile() {
         return tTile;
@@ -43,13 +36,7 @@ public class Ant {
         tTile = tile;
     }
 
-    public Tile gettPreviousTile() {
-        return tPreviousTile;
-    }
 
-    public void settPreviousTile(Tile tile) {
-        tPreviousTile = tile;
-    }
 
     public int getRouteLength() {
         return routeLength;
@@ -88,56 +75,40 @@ public class Ant {
         double eastPheromone = 0, northPheromone = 0, westPheromone = 0, southPheromone = 0;
         double eastChance = 0, northChance = 0, westChance = 0, southChance = 0;
 
-        if (tTile.hasEastTile() && tTile.getEastTile().isAccessable()) {
-            eastPheromone = tTile.getEastTile().getPheromone();
-        }
-        if (tTile.hasNorthTile() && tTile.getNorthTile().isAccessable()) {
-            northPheromone = tTile.getNorthTile().getPheromone();
-        }
 
-        if (tTile.hasWestTile() && tTile.getWestTile().isAccessable()) {
-            westPheromone = tTile.getWestTile().getPheromone();
-        }
-
-        if (tTile.hasSouthTile() && tTile.getSouthTile().isAccessable()) {
-            southPheromone = tTile.getSouthTile().getPheromone();
-        }
 
         ArrayList<Tile> tiles = tTile.getAccessibleTiles();
         double total = tiles.size();
-        if (tTile.hasEastTile()) {
+
+        if (tTile.hasEastTile()&&tTile.getEastTile().isAccessable()) {
             if (MainMaze.noRouteYet) {
-                if (tiles.contains(tTile.getEastTile())) {
-                    eastChance = 1 / total;
-                }
+                eastChance = 1 / total;
+
             } else {
                 eastPheromone = tTile.getEastTile().getPheromone();
             }
         }
-        if (tTile.hasNorthTile()) {
+        if (tTile.hasNorthTile()&&tTile.getNorthTile().isAccessable()) {
             if (MainMaze.noRouteYet) {
-                if (tiles.contains(tTile.getNorthTile())) {
-                    northChance = 1 / total;
-                }
+                northChance = 1 / total;
+
             } else {
                 northPheromone = tTile.getNorthTile().getPheromone();
             }
 
         }
-        if (tTile.hasWestTile()) {
+        if (tTile.hasWestTile()&&tTile.getWestTile().isAccessable()) {
             if (MainMaze.noRouteYet) {
-                if (tiles.contains(tTile.getWestTile())) {
                     westChance = 1 / total;
-                }
+
             } else {
                 westPheromone = tTile.getWestTile().getPheromone();
             }
         }
-        if (tTile.hasSouthTile()) {
+        if (tTile.hasSouthTile()&&tTile.getSouthTile().isAccessable()) {
             if (MainMaze.noRouteYet) {
-                if (tiles.contains(tTile.getSouthTile())) {
-                    southChance = 1 / total;
-                }
+                southChance = 1 / total;
+
             } else {
                 southPheromone = tTile.getSouthTile().getPheromone();
             }

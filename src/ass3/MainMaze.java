@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class MainMaze {
 
     public final static int MAX_NUMBER_OF_ITERATIONS = 100;
-    public final static int NUMBER_OF_ANTS = 100;
+    public final static int NUMBER_OF_ANTS = 1;
     public final static double PHEROMONE_DROPPED = 50;
     public final static double EVAPORATION_PARAMETERS = 0.05;
     public final static double CONVERGION_CRITERION = .05;
@@ -56,17 +56,11 @@ public class MainMaze {
         int action;
         for (Ant ant : tAnts) {
             while (!ant.hasReachedGoal()) {
-                ant.addVisited(ant.getTile());
-                ant.settPreviousTile(ant.getTile());
                 action = ant.selectTile();
-                if (action != 4) {
-                    ant.incrementRouteLength();
-                    ant.addAction(action);
-                }
+                ant.incrementRouteLength();
+                ant.addAction(action);
                 ant.getTile().moveAnt(ant, action);
-                if (!ant.gettVisited().contains(ant.getTile()))
-                    ant.addVisited(ant.getTile());
-
+                ant.addVisited(ant.getTile());
                 checkFinished(ant);
 
             }
