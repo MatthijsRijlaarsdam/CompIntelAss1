@@ -9,12 +9,14 @@ import java.util.ArrayList;
 public class MainMaze {
 
     public final static int MAX_NUMBER_OF_ITERATIONS = 100;
-    public final static int NUMBER_OF_ANTS = 10;
-    public final static double PHEROMONE_DROPPED = 200;
-    public final static double EVAPORATION_PARAMETERS = 0.30;
-    public final static double CONVERGION_CRITERION = 0.10;
-    public final static String mapFile = "INSANE";
-    public final static String coordsFile = "INSANE start-finish.txt";
+    public final static int NUMBER_OF_ANTS = 100;
+    public final static double PHEROMONE_DROPPED = 100;
+    public final static double EVAPORATION_PARAMETERS = 0.20;
+    public final static double CONVERGION_CRITERION = 15;
+    public final static String mapFile = "hard maze.txt";
+    public final static String coordsFile = "hard coordinates.txt";
+    public final static String StartingPoint = "Start";
+    public final static String EndPoint = "Product 1";
 
     protected Map tMap;
     protected ArrayList<Ant> tAnts;
@@ -31,7 +33,6 @@ public class MainMaze {
         resetAnts();
         bestActions = new ArrayList<Integer>();
         bestRoute = Integer.MAX_VALUE;
-        noRouteYet = true;
     }
 
     public void resetAnts() {
@@ -64,21 +65,6 @@ public class MainMaze {
                     ant.addAction(action);
                 }
                 checkFinished(ant);
-                try {
-                    Writer writer = new FileWriter(new File("route"));
-                    writer.write(ant.getRouteLength()+ ";\n");
-                    writer.write(tMap.getStart().gettX() + ", " + tMap.getStart().gettY() + ";\n");
-                    for (int i : ant.gettActions()) {
-                        writer.write(i + ";");
-                    }
-                    writer.flush();
-                    writer.close();
-                }
-                catch(IOException exc){
-                }
-
-
-
             }
         }
         
@@ -102,7 +88,6 @@ public class MainMaze {
     public void getBestAnt(Ant ant) {
         if (ant.getRouteLength() < bestRoute) {
             bestActions = ant.gettActions();
-            prevBest=bestRoute;
             bestRoute = ant.getRouteLength();
             System.out.println(bestRoute + ";");
             System.out.println(tMap.getStart().gettX() + ", " + tMap.getStart().gettY() + ";");
@@ -138,33 +123,41 @@ public class MainMaze {
         MainMaze main = new MainMaze(parser.getMap());
         boolean finished=false;
         int i=0;
+        int noImprovement = 0;
         while(i < MAX_NUMBER_OF_ITERATIONS&&!finished) {
             System.out.println("iteration no:" + i);
-            if(i>0)
-                noRouteYet=true;
 
-            //if(main.prevBest/main.bestRoute-1<CONVERGION_CRITERION)
-
-            //Calculate total route length
             main.resetAnts();
             main.evaporate();
             main.generateSolotions();
             main.updatePheromone();
 
-            int totalroute = 0;
-            for (int routelength : main.routeLengths) {
-                totalroute += routelength;
+            //check if the best route is improving
+            if (main.prevBest == main.bestRoute) {
+                noImprovement++;
+            } else {
+                noImprovement = 0;
             }
-            double averageroutelength = totalroute / main.routeLengths.size();
-            System.out.println("average: " + averageroutelength);
-            System.out.println("best so far: " + main.bestRoute);
-            if ((averageroutelength - main.bestRoute) /  averageroutelength < CONVERGION_CRITERION) {
+            if (noImprovement > CONVERGION_CRITERION) {
                 finished=true;
-
+            } else {
+                //set new previous best route
+                main.prevBest = main.bestRoute;
             }
-
-            //set new previous best route
             i++;
+        }
+
+        try {
+            Writer writer = new FileWriter(new File("route"));
+            writer.write(main.bestRoute + ";\n");
+            writer.write(main.tMap.getStart().gettX() + ", " + main.tMap.getStart().gettY() + ";\n");
+            for (int action : main.bestActions) {
+                writer.write(action + ";");
+            }
+            writer.flush();
+            writer.close();
+        }
+        catch(IOException exc){
         }
     }
 }
