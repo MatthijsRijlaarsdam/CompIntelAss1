@@ -13,10 +13,10 @@ public class MainMaze {
     public final static double PHEROMONE_DROPPED = 100;
     public final static double EVAPORATION_PARAMETERS = 0.20;
     public final static double CONVERGION_CRITERION = 15;
-    public final static String mapFile = "hard maze.txt";
-    public final static String coordsFile = "hard coordinates.txt";
+    public final static String mapFile = "easy maze.txt";
+    public final static String coordsFile = "easy coordinates.txt";
     public final static String StartingPoint = "Start";
-    public final static String EndPoint = "Product 1";
+    public final static String EndPoint = "End";
 
     protected Map tMap;
     protected ArrayList<Ant> tAnts;
@@ -148,16 +148,32 @@ public class MainMaze {
         }
 
         try {
-            Writer writer = new FileWriter(new File("route"));
+            //route
+            Writer writer = new FileWriter(new File("route: " + StartingPoint + " - " + EndPoint +".txt"));
             writer.write(main.bestRoute + ";\n");
             writer.write(main.tMap.getStart().gettX() + ", " + main.tMap.getStart().gettY() + ";\n");
             for (int action : main.bestActions) {
                 writer.write(action + ";");
             }
+            //reverse
             writer.flush();
             writer.close();
+
+            Writer writer2 = new FileWriter(new File("route: " + EndPoint + StartingPoint+".txt"));
+            writer2.write(main.bestRoute + ";\n");
+            writer2.write(main.tMap.getEnd().gettX() + ", " + main.tMap.getStart().gettY() + ";\n");
+            for (int action : main.bestActions) {
+                if (action < 2) {
+                    writer2.write(action+2 + ";");
+                } else {
+                    writer2.write(action-2 + ";");
+                }
+            }
+            writer2.flush();
+            writer2.close();
         }
         catch(IOException exc){
+            exc.printStackTrace();
         }
     }
 }
