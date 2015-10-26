@@ -9,12 +9,12 @@ import java.util.ArrayList;
 public class MainMaze {
 
     public final static int MAX_NUMBER_OF_ITERATIONS = 100;
-    public final static int NUMBER_OF_ANTS = 1;
-    public final static double PHEROMONE_DROPPED = 50;
-    public final static double EVAPORATION_PARAMETERS = 0.05;
-    public final static double CONVERGION_CRITERION = .05;
-    public final static String mapFile = "medium maze.txt";
-    public final static String coordsFile = "medium coordinates.txt";
+    public final static int NUMBER_OF_ANTS = 10;
+    public final static double PHEROMONE_DROPPED = 200;
+    public final static double EVAPORATION_PARAMETERS = 0.30;
+    public final static double CONVERGION_CRITERION = 0.10;
+    public final static String mapFile = "INSANE";
+    public final static String coordsFile = "INSANE start-finish.txt";
 
     protected Map tMap;
     protected ArrayList<Ant> tAnts;
@@ -29,8 +29,6 @@ public class MainMaze {
     public MainMaze(Map map) {
         tMap = map;
         resetAnts();
-        actions = new ArrayList<ArrayList<Integer>>();
-        routeLengths = new ArrayList<Integer>();
         bestActions = new ArrayList<Integer>();
         bestRoute = Integer.MAX_VALUE;
         noRouteYet = true;
@@ -42,6 +40,8 @@ public class MainMaze {
             tAnts.add(new Ant(tMap.getStart()));
         }
         antsReachedGoal = 0;
+        actions = new ArrayList<ArrayList<Integer>>();
+        routeLengths = new ArrayList<Integer>();
     }
 
     public void settMap(Map map) {
@@ -57,19 +57,13 @@ public class MainMaze {
         for (Ant ant : tAnts) {
             while (!ant.hasReachedGoal()) {
                 action = ant.selectTile();
-                ant.incrementRouteLength();
-                ant.addAction(action);
                 ant.getTile().moveAnt(ant, action);
                 ant.addVisited(ant.getTile());
-                checkFinished(ant);
-
-                if(ant.gettActions().size()%100000==0){
-                    System.out.println(ant.getRouteLength()+ ";");
-                    System.out.println(tMap.getStart().gettX() + ", " + tMap.getStart().gettY() + ";");
-                    for (int i : ant.gettActions()) {
-                        System.out.print(i + ";");
-                    }
+                if (action != 4) {
+                    ant.incrementRouteLength();
+                    ant.addAction(action);
                 }
+                checkFinished(ant);
                 try {
                     Writer writer = new FileWriter(new File("route"));
                     writer.write(ant.getRouteLength()+ ";\n");
@@ -93,7 +87,6 @@ public class MainMaze {
     public void checkFinished(Ant ant) {
         if (ant.getTile().equals(tMap.getEnd())) {
             if (!ant.hasReachedGoal()) {
-
                 antsReachedGoal++;
                 routeLengths.add(ant.getRouteLength());
                 actions.add(ant.gettActions());
@@ -146,16 +139,31 @@ public class MainMaze {
         boolean finished=false;
         int i=0;
         while(i < MAX_NUMBER_OF_ITERATIONS&&!finished) {
+            System.out.println("iteration no:" + i);
             if(i>0)
                 noRouteYet=true;
 
-            if(main.prevBest/main.bestRoute-1<CONVERGION_CRITERION)
-                finished=true;
+            //if(main.prevBest/main.bestRoute-1<CONVERGION_CRITERION)
 
+            //Calculate total route length
             main.resetAnts();
             main.evaporate();
             main.generateSolotions();
             main.updatePheromone();
+
+            int totalroute = 0;
+            for (int routelength : main.routeLengths) {
+                totalroute += routelength;
+            }
+            double averageroutelength = totalroute / main.routeLengths.size();
+            System.out.println("average: " + averageroutelength);
+            System.out.println("best so far: " + main.bestRoute);
+            if ((averageroutelength - main.bestRoute) /  averageroutelength < CONVERGION_CRITERION) {
+                finished=true;
+
+            }
+
+            //set new previous best route
             i++;
         }
     }

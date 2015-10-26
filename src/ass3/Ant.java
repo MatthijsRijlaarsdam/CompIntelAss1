@@ -3,6 +3,7 @@ package ass3;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 /**
  * Created by Niek on 10/21/2015.
@@ -16,6 +17,7 @@ public class Ant {
     protected boolean tGoalReached;
     protected int backIndex;
     protected int i;
+    protected Stack<Tile> mainRoute;
 
     public Ant(Tile tile) {
         this.tTile = tile;
@@ -24,6 +26,7 @@ public class Ant {
         tActions = new ArrayList<Integer>();
         tGoalReached = false;
         backIndex=0;
+        mainRoute = new Stack<Tile>();
         i = 0;
     }
 
@@ -73,11 +76,37 @@ public class Ant {
     public int selectTile() {
 
         double eastPheromone = 0, northPheromone = 0, westPheromone = 0, southPheromone = 0;
-        double eastChance = 0, northChance = 0, westChance = 0, southChance = 0;
+        double eastChance, northChance, westChance, southChance;
 
+        //TEST
+        if (tTile.hasEastTile()&&tTile.getEastTile().isAccessable()) {
+            if (!tVisited.contains(tTile.getEastTile()))
+                eastPheromone = tTile.getEastTile().getPheromone();
+        }
 
+        if (tTile.hasNorthTile()&&tTile.getNorthTile().isAccessable()) {
+            if (!tVisited.contains(tTile.getNorthTile()))
+                northPheromone = tTile.getNorthTile().getPheromone();
+        }
 
-        ArrayList<Tile> tiles = tTile.getAccessibleTiles();
+        if (tTile.hasWestTile()&&tTile.getWestTile().isAccessable()) {
+            if (!tVisited.contains(tTile.getWestTile()))
+                westPheromone = tTile.getWestTile().getPheromone();
+        }
+
+        if (tTile.hasSouthTile()&&tTile.getSouthTile().isAccessable()) {
+            if (!tVisited.contains(tTile.getSouthTile()))
+            southPheromone = tTile.getSouthTile().getPheromone();
+        }
+
+        double total = eastPheromone + northPheromone + westPheromone + southPheromone;
+        eastChance = eastPheromone / total;
+        northChance = northPheromone / total;
+        westChance = westPheromone / total;
+        southChance = southPheromone / total;
+
+/**
+            ArrayList<Tile> tiles = tTile.getAccessibleTiles();
         double total = tiles.size();
 
         if (tTile.hasEastTile()&&tTile.getEastTile().isAccessable()) {
@@ -121,33 +150,34 @@ public class Ant {
             westChance = westPheromone / total;
             southChance = southPheromone / total;
         }
+
+ **/
+
         double random = Math.random();
 
         //if unvisited
         if (random < eastChance) {
             //go east
-            if (!tVisited.contains(tTile.getEastTile())){
                 backIndex=tActions.size()-1;
-                return 0;}
+                return 0;
         } else if (random < eastChance + northChance) {
             //go north
-            if (!tVisited.contains(tTile.getNorthTile())){
                 backIndex=tActions.size()-1;
-                return 1;}
+                return 1;
         } else if (random < eastChance + northChance + westChance) {
             //go west
-            if (!tVisited.contains(tTile.getWestTile())){
                 backIndex=tActions.size()-1;
-                return 2;}
+                return 2;
         } else {
             //go south
-            if (!tVisited.contains(tTile.getSouthTile())){
+            if (southChance > 0){
                 backIndex=tActions.size()-1;
                 return 3;}
         }
 
+        int action = 4;
         //All tiles around are visited, so go to previous
-        int action= tActions.get(backIndex);
+        //int action= tActions.get(backIndex);
         
         backIndex--;
 

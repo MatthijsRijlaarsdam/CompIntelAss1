@@ -20,7 +20,9 @@ public class Tile {
         accessible=_accessible;
         antList = new ArrayList<Ant>();
         accessibleTiles = new ArrayList<Tile>();
-        tPheromone = 0;
+        if (_accessible) {
+            tPheromone = 0.001;
+        }
     }
 
     public double getPheromone() {
@@ -84,7 +86,8 @@ public class Tile {
         switch (direction) {
             case 0:
                 if (hasEastTile()) {
-                        ant.setTile(eastTile);
+                    ant.mainRoute.push(this);
+                    ant.setTile(eastTile);
                         eastTile.addAnt(ant);
                         this.removeAnt(ant);
                     return true;
@@ -92,6 +95,7 @@ public class Tile {
                 break;
             case 1:
                 if (hasNorthTile()) {
+                    ant.mainRoute.push(this);
                     ant.setTile(northTile);
                     northTile.addAnt(ant);
                     this.removeAnt(ant);
@@ -100,6 +104,7 @@ public class Tile {
                 break;
             case 2:
                 if (hasWestTile()) {
+                    ant.mainRoute.push(this);
                     ant.setTile(westTile);
                     westTile.addAnt(ant);
                     this.removeAnt(ant);
@@ -108,13 +113,19 @@ public class Tile {
                 break;
             case 3:
                 if (hasSouthTile()) {
+                    ant.mainRoute.push(this);
                     ant.setTile(southTile);
                     southTile.addAnt(ant);
                     this.removeAnt(ant);
                     return true;
                 }
                 break;
-
+            case 4:
+                ant.setTile(ant.mainRoute.peek());
+                ant.mainRoute.peek().addAnt(ant);
+                this.removeAnt(ant);
+                ant.mainRoute.pop();
+                ant.gettActions().remove(ant.gettActions().size()-1);
         }
         return false;
     }
