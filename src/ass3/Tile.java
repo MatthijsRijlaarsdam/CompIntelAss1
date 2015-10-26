@@ -80,8 +80,7 @@ public class Tile {
     }
 
     public boolean moveAnt(Ant ant, int direction) {
-        if(direction!=4)
-            ant.backIndex=ant.gettVisited().size()-1;
+
         switch (direction) {
             case 0:
                 if (hasEastTile()) {
@@ -115,12 +114,7 @@ public class Tile {
                     return true;
                 }
                 break;
-            case 4:
-                ant.tVisited.get(ant.backIndex).addAnt(ant);
-                ant.setTile(ant.tVisited.get(ant.backIndex));
-                this.removeAnt(ant);
-                ant.backIndex--;
-                break;
+
         }
         return false;
     }

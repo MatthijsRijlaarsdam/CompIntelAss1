@@ -1,6 +1,6 @@
 package ass3;
 
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -62,6 +62,28 @@ public class MainMaze {
                 ant.getTile().moveAnt(ant, action);
                 ant.addVisited(ant.getTile());
                 checkFinished(ant);
+
+                if(ant.gettActions().size()%100000==0){
+                    System.out.println(ant.getRouteLength()+ ";");
+                    System.out.println(tMap.getStart().gettX() + ", " + tMap.getStart().gettY() + ";");
+                    for (int i : ant.gettActions()) {
+                        System.out.print(i + ";");
+                    }
+                }
+                try {
+                    Writer writer = new FileWriter(new File("route"));
+                    writer.write(ant.getRouteLength()+ ";\n");
+                    writer.write(tMap.getStart().gettX() + ", " + tMap.getStart().gettY() + ";\n");
+                    for (int i : ant.gettActions()) {
+                        writer.write(i + ";");
+                    }
+                    writer.flush();
+                    writer.close();
+                }
+                catch(IOException exc){
+                }
+
+
 
             }
         }

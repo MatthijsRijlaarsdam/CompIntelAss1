@@ -126,24 +126,32 @@ public class Ant {
         //if unvisited
         if (random < eastChance) {
             //go east
-            if (!tVisited.contains(tTile.getEastTile()))
-                return 0;
+            if (!tVisited.contains(tTile.getEastTile())){
+                backIndex=tActions.size()-1;
+                return 0;}
         } else if (random < eastChance + northChance) {
             //go north
-            if (!tVisited.contains(tTile.getNorthTile()))
-                return 1;
+            if (!tVisited.contains(tTile.getNorthTile())){
+                backIndex=tActions.size()-1;
+                return 1;}
         } else if (random < eastChance + northChance + westChance) {
             //go west
-            if (!tVisited.contains(tTile.getWestTile()))
-                return 2;
+            if (!tVisited.contains(tTile.getWestTile())){
+                backIndex=tActions.size()-1;
+                return 2;}
         } else {
             //go south
-            if (!tVisited.contains(tTile.getSouthTile()))
-                return 3;
+            if (!tVisited.contains(tTile.getSouthTile())){
+                backIndex=tActions.size()-1;
+                return 3;}
         }
 
         //All tiles around are visited, so go to previous
-        return 4;
+        int action= tActions.get(backIndex);
+        
+        backIndex--;
+
+        return action;
     }
 
 }
