@@ -13,6 +13,7 @@ public class MainMaze {
     public final static double PHEROMONE_DROPPED = 1000;
     public final static double EVAPORATION_PARAMETERS = 0.05;
     public final static int CONVERGION_CRITERION = 1000;
+    public final static int MAX_STEPS=1000;
     public final static String mapFile = "medium maze.txt";
     public final static String coordsFile = "medium coordinates.txt";
 
@@ -53,7 +54,7 @@ public class MainMaze {
 
     public void generateSolotions() {
         int action;
-        for (int steps = 0; steps < CONVERGION_CRITERION; steps++) {
+        for (int steps = 0; steps < MAX_STEPS; steps++) {
             for (Ant ant : tAnts) {
                 ant.addVisited(ant.getTile());
                 if (!ant.hasReachedGoal()) {
