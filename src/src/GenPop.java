@@ -130,7 +130,7 @@ public class GenPop {
 							}
 						}
 					}
-					a.add(19);
+					a.add(LengthGene+1);
 					Population.set(i, a);
 				} else if (!Doorgaan){						// Als een gen volledig muteerd, een random gen bouwen
 					boolean nieuw = false;
