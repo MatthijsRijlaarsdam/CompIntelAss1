@@ -1,19 +1,22 @@
 package ass3;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 
 /**
- * Created by Niek on 10/21/2015.
+ * Created by Matthijs on 10/27/15.
  */
-public class MainMaze {
+public class MainMatrix {
 
     public final static int MAX_NUMBER_OF_ITERATIONS = 100;
     public final static int NUMBER_OF_ANTS = 50;
     public final static double PHEROMONE_DROPPED = 100;
     public final static double EVAPORATION_PARAMETERS = 0.20;
     public final static double CONVERGION_CRITERION = 5;
-    public final static String mapFile = "INSANE";
+    public final static String mapFile = "hard maze.txt";
     public final static String coordsFile = "INSANE start-finish.txt";
 
 
@@ -23,15 +26,16 @@ public class MainMaze {
     protected ArrayList<Integer> routeLengths;
     protected ArrayList<Integer> bestActions;
     protected int bestRoute;
-    protected int prevBest=Integer.MAX_VALUE;
+    protected int prevBest = Integer.MAX_VALUE;
     protected int antsReachedGoal;
-    public static boolean noRouteYet;
 
-    public MainMaze(Map map) {
+    public MainMatrix(Map map) {
         tMap = map;
         resetAnts();
         bestActions = new ArrayList<Integer>();
         bestRoute = Integer.MAX_VALUE;
+        prevBest = Integer.MAX_VALUE;
+
     }
 
     public void resetAnts() {
@@ -66,7 +70,7 @@ public class MainMaze {
                 checkFinished(ant);
             }
         }
-        
+
     }
 
     public void checkFinished(Ant ant) {
@@ -117,50 +121,90 @@ public class MainMaze {
     }
 
     public static void main(String[] args) {
-        MapParser parser = new MapParser(mapFile, coordsFile);
-        parser.parseMap();
-        MainMaze main = new MainMaze(parser.getMap());
-        boolean finished=false;
-        int i=0;
-        int noImprovement = 0;
-        while(i < MAX_NUMBER_OF_ITERATIONS&&!finished) {
-            System.out.println("iteration no:" + i);
 
-            main.resetAnts();
-            main.evaporate();
-            main.generateSolotions();
-            main.updatePheromone();
 
-            //check if the best route is improving
-            if (main.prevBest == main.bestRoute) {
-                noImprovement++;
-            } else {
-                noImprovement = 0;
+        int[][] locationArray = {{0, 19}, {11, 13}, {75, 72}, {79, 0}, {11, 30}, {34, 78}, {8, 39}, {15, 59}, {62, 21}, {42, 36}, {63, 65}, {37, 50}, {4, 66}, {31, 25}, {47, 47}, {60, 0}, {78, 60}, {0, 50}};
+
+        ArrayList<String> distArray = new ArrayList<String>();
+
+        int startFinish=0;
+        for (int index = 0; index < locationArray.length; index++) {
+            startFinish++;
+            for (int finishIndex = startFinish; finishIndex < locationArray.length; finishIndex++) {
+                int[] productStart = locationArray[index];
+                int[] productFinish = locationArray[finishIndex];
+                int xStart = productStart[0];
+                int yStart = productStart[1];
+                int xEnd = productFinish[0];
+                int yEnd = productFinish[1];
+
+                MapParser parser = new MapParser(mapFile, coordsFile);
+                parser.parseMap();
+
+
+                MainMatrix main = new MainMatrix(parser.getMap());
+                main.tMap.setStart(main.tMap.getTileAt(xStart, yStart));
+                main.tMap.setEnd(main.tMap.getTileAt(xEnd, yEnd));
+                boolean finished = false;
+                int i = 0;
+                int noImprovement = 0;
+                while (i < MAX_NUMBER_OF_ITERATIONS && !finished) {
+                    System.out.println("iteration no:" + i);
+
+                    main.resetAnts();
+                    main.evaporate();
+                    main.generateSolotions();
+                    main.updatePheromone();
+
+                    //check if the best route is improving
+                    if (main.prevBest == main.bestRoute) {
+                        noImprovement++;
+                    } else {
+                        noImprovement = 0;
+                    }
+                    if (noImprovement > CONVERGION_CRITERION) {
+                        finished = true;
+                    } else {
+                        //set new previous best route
+                        main.prevBest = main.bestRoute;
+                    }
+                    i++;
+                }
+
+                distArray.add(String.valueOf(main.bestRoute));
+
+
             }
-            if (noImprovement > CONVERGION_CRITERION) {
-                finished=true;
-            } else {
-                //set new previous best route
-                main.prevBest = main.bestRoute;
-            }
-            i++;
+
+
         }
 
         try {
             //route
-            Writer writer = new FileWriter(new File("route.txt"));
-            writer.write(main.bestRoute + ";\n");
-            writer.write(main.tMap.getStart().gettX() + ", " + main.tMap.getStart().gettY() + ";\n");
-            for (int action : main.bestActions) {
-                writer.write(action + ";");
+            Writer writer = new FileWriter(new File("matrix.txt"));
+            int newLineIndex=locationArray.length-1;
+            int i=0;
+            for(String dist:distArray) {
+                if(i==newLineIndex){
+                    writer.write("\n");
+                    newLineIndex--;
+                    i=0;
+                }
+                writer.write(dist + " ");
+                i++;
             }
             writer.flush();
             writer.close();
 
 
-        }
-        catch(IOException exc){
+        } catch (IOException exc) {
             exc.printStackTrace();
         }
+
+
     }
 }
+
+
+
+
