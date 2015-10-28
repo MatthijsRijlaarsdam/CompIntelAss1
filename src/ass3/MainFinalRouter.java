@@ -124,8 +124,9 @@ public class MainFinalRouter {
     public static void main(String[] args) {
 
 
-        int[][] locationArray = {{0, 19}, {11, 13}, {75, 72}, {79, 0}, {11, 30}, {34, 78}, {8, 39}, {15, 59}, {62, 21}, {42, 36}, {63, 65}, {37, 50}, {4, 66}, {31, 25}, {47, 47}, {60, 0}, {78, 60}, {0, 50}};
-        int[] productArray = {};
+        int[][] locationArray = {{0, 0}, {0, 19}, {11, 13}, {8, 39}, {11, 30}, {31, 25}, {60, 0}, {79, 0}, {62, 21}, {0, 50}, {15, 59}, {42, 36}, {47, 47}, {37, 50}, {4, 66}, {34, 78}, {63, 65}, {75, 72}, {78, 60}, {58, 55}
+        };
+        int[] productArray = {1, 2, 7, 5, 14, 16, 4, 9, 18, 8, 10, 15, 12, 13, 6, 11, 3, 17};
         ArrayList<ArrayList<Integer>> actionArray = new ArrayList<ArrayList<Integer>>();
 
         int startFinish = 0;
@@ -171,8 +172,7 @@ public class MainFinalRouter {
                 i++;
             }
 
-            actionArray.set(index,main.bestActions);
-
+            actionArray.add(main.bestActions);
 
         }
 
@@ -180,11 +180,12 @@ public class MainFinalRouter {
             //route
             Writer writer = new FileWriter(new File("finalRoute.txt"));
 
-                for(ArrayList<Integer> route:actionArray){
-                for(Integer i:route){
-                    writer.write(String.valueOf(i)+";\n");
+            for (ArrayList<Integer> route : actionArray) {
+                for (Integer i : route) {
+                    writer.write(String.valueOf(i) + ";\n");
                 }
-                writer.write("take product #"+productArray[actionArray.indexOf(route)]+ ";\n");
+                if(actionArray.indexOf(route)!=actionArray.size()-1)
+                    writer.write("take product #" + productArray[actionArray.indexOf(route)] + ";\n");
 
 
             }
