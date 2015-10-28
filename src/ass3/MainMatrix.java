@@ -16,7 +16,7 @@ public class MainMatrix {
     public final static double PHEROMONE_DROPPED = 100;
     public final static double EVAPORATION_PARAMETERS = 0.20;
     public final static double CONVERGION_CRITERION = 5;
-    public final static String mapFile = "world maze.txt";
+    public final static String mapFile = "hard maze.txt";
     public final static String coordsFile = "INSANE start-finish.txt";
 
 
@@ -60,6 +60,7 @@ public class MainMatrix {
         int action;
         for (Ant ant : tAnts) {
             while (!ant.hasReachedGoal()) {
+                checkFinished(ant);
                 action = ant.selectTile();
                 ant.getTile().moveAnt(ant, action);
                 ant.addVisited(ant.getTile());
@@ -67,7 +68,6 @@ public class MainMatrix {
                     ant.incrementRouteLength();
                     ant.addAction(action);
                 }
-                checkFinished(ant);
             }
         }
 
@@ -123,14 +123,12 @@ public class MainMatrix {
     public static void main(String[] args) {
 
 
-        int[][] locationArray = {{0, 91}, {0, 0}, {6, 36}, {10, 122}, {57, 5}, {89, 4}, {120, 9}, {32, 36}, {114, 56}, {14, 78}, {40, 68}, {62, 70}, {69, 63}, {42, 97}, {100, 94}, {112, 101}, {67, 113}, {124, 83}};
+        int[][] locationArray = {{0, 19}, {11, 13}, {75, 72}, {79, 0}, {11, 30}, {34, 78}, {8, 39}, {15, 59}, {62, 21}, {42, 36}, {63, 65}, {37, 50}, {4, 66}, {31, 25}, {47, 47}, {60, 0}, {78, 60}, {0, 50}};
 
         int[][] distArray = new int[locationArray.length][locationArray.length];
 
-        int startFinish = 0;
         for (int index = 0; index < locationArray.length; index++) {
-            startFinish++;
-            for (int finishIndex = startFinish; finishIndex < locationArray.length; finishIndex++) {
+            for (int finishIndex = index; finishIndex < locationArray.length; finishIndex++) {
                 int[] productStart = locationArray[index];
                 int[] productFinish = locationArray[finishIndex];
                 int xStart = productStart[0];
@@ -180,24 +178,19 @@ public class MainMatrix {
         }
 
         try {
+
+
+
             //route
             Writer writer = new FileWriter(new File("matrix.txt"));
-            int newLineIndex = locationArray.length - 1;
             int i = 0;
-            int zeroIndex = 0;
             distArray = MainMatrix.transpose(distArray);
             for (int[] row : distArray) {
+                writer.write("\n");
+
                 for (int dist : row) {
-                    if (i == newLineIndex) {
-                        writer.write("\n");
-                        newLineIndex--;
-                        i = 0;
-                        zeroIndex++;
-                    }
-                    if (i == zeroIndex)
-                        writer.write("0 ");
-                    writer.write(String.valueOf(dist) + " ");
-                    i++;
+
+                    writer.write(Integer.toString(dist) + " ");
                 }
             }
             writer.flush();
@@ -215,9 +208,9 @@ public class MainMatrix {
 
         // transpose
         if (original.length > 0) {
-            for (int i = 0; i < original[0].length; i++) {
-                for (int j = 0; j < original.length; j++) {
-                    original[i][j] = original[j][i];
+            for (int i = 0; i < original.length; i++) {
+                for (int j = i; j < original[i].length; j++) {
+                    original[j][i]= original[i][j];
                 }
             }
         }

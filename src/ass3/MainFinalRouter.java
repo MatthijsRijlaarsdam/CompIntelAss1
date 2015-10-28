@@ -182,9 +182,9 @@ public class MainFinalRouter {
 
                 for(ArrayList<Integer> route:actionArray){
                 for(Integer i:route){
-                    writer.write(String.valueOf(i)+"\n;");
+                    writer.write(String.valueOf(i)+";\n");
                 }
-                writer.write("take product #"+productArray[actionArray.indexOf(route)]+ ";");
+                writer.write("take product #"+productArray[actionArray.indexOf(route)]+ ";\n");
 
 
             }
