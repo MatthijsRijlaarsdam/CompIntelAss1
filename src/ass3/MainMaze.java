@@ -9,9 +9,9 @@ import java.util.ArrayList;
 public class MainMaze {
 
     public final static int MAX_NUMBER_OF_ITERATIONS = 100;
-    public final static int NUMBER_OF_ANTS = 50;
+    public final static int NUMBER_OF_ANTS = 1;
     public final static double PHEROMONE_DROPPED = 100;
-    public final static double EVAPORATION_PARAMETERS = 0.20;
+    public final static double EVAPORATION_PARAMETERS = 0.99;
     public final static double CONVERGION_CRITERION = 5;
     public final static String mapFile = "INSANE";
     public final static String coordsFile = "INSANE start-finish.txt";
